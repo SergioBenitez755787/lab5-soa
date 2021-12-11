@@ -43,6 +43,11 @@ class Router(meterRegistry: MeterRegistry) : RouteBuilder() {
 
     override fun configure() {
         from(DIRECT_ROUTE)
+            .process {
+                val header = it.getIn().getHeader("keywords") as String
+                val headerSplited = header.split(":")
+                it.getIn().setHeader("keywords", "?count=" + headerSplited[1])
+            }
             .toD("twitter-search:\${header.keywords}")
             .wireTap(LOG_ROUTE)
             .wireTap(COUNT_ROUTE)
